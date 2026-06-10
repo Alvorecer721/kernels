@@ -48,7 +48,9 @@ public:
 };
 
 Tensor xielu(const Tensor& x, const Tensor& alpha_p, const Tensor& alpha_n, double beta, double eps) {
-    return XIELUAutograd::apply(x, alpha_p, alpha_n, beta, eps);
+    // forward kernel uses vectorized loads that assume contiguous memory;
+    // no-op for contiguous inputs, silently-wrong results without it
+    return XIELUAutograd::apply(x.contiguous(), alpha_p, alpha_n, beta, eps);
 }
 
 Tensor xielu_forward_meta(
