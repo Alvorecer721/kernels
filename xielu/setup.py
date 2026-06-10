@@ -15,8 +15,6 @@ setup(
                 "nvcc": [
                     "-O3",
                     "--use_fast_math",
-                    "--ptxas-options=-v",
-                    "-lineinfo",
                 ],
             },
         )
