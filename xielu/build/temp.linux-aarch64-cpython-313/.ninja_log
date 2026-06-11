@@ -1,5 +1,0 @@
-# ninja log v7
-1	31899	1781126935000000000	/iopsstor/scratch/cscs/xyixuan/apertus/xielu-kernel/kernels/xielu/build/temp.linux-aarch64-cpython-313/src/binding.o	25974ce88596b629
-3	51965	1781126935000000000	/iopsstor/scratch/cscs/xyixuan/apertus/xielu-kernel/kernels/xielu/build/temp.linux-aarch64-cpython-313/src/xielu.o	5db34b4ec1a9d824
-395	63472	1781129623000000000	/iopsstor/scratch/cscs/xyixuan/apertus/xielu-kernel/kernels/xielu/build/temp.linux-aarch64-cpython-313/src/xielu.o	b4e49f4185c3c973
-390	43371	1781129747000000000	/iopsstor/scratch/cscs/xyixuan/apertus/xielu-kernel/kernels/xielu/build/temp.linux-aarch64-cpython-313/src/xielu.o	5db34b4ec1a9d824
