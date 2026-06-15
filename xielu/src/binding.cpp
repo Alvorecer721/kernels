@@ -106,4 +106,20 @@ TORCH_LIBRARY_IMPL(xielu, Meta, m) {
     m.impl("xielu", &xielu_meta);
 }
 
+// Autograd key: route the differentiable `xielu` entry point through XIELUAutograd
+// so backprop uses the hand-written backward kernel. Without this, calling
+// torch.ops.xielu.xielu on a grad-requiring tensor hits PyTorch's
+// autograd-not-implemented fallback, which warns ("an autograd kernel was not
+// registered ... may lead to silently incorrect behavior") and is deprecated.
+// Gradients happen to remain correct today because the inner XIELUAutograd::apply
+// still records under that fallback (verified by tools/check_xielu_autograd.py),
+// but the fallback is slated for removal — so register explicitly. The Autograd
+// key now intercepts every `xielu` call for ordinary tensors (grad and no-grad
+// alike; XIELUAutograd::apply simply skips graph recording when GradMode is off),
+// which leaves the CUDA-key `xielu` impl above shadowed/redundant — harmless, but
+// it could be dropped (or switched to the raw `xielu_forward`) at the next rebuild.
+TORCH_LIBRARY_IMPL(xielu, Autograd, m) {
+    m.impl("xielu", &xielu);
+}
+
 PYBIND11_MODULE(_xielu, m) {}
