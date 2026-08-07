@@ -1,9 +1,0 @@
-__init__.py
-setup.py
-./__init__.py
-src/binding.cpp
-src/xielu.cu
-xielu.egg-info/PKG-INFO
-xielu.egg-info/SOURCES.txt
-xielu.egg-info/dependency_links.txt
-xielu.egg-info/top_level.txt

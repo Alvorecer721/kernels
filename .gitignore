@@ -1,3 +1,2 @@
-xielu/build/
-xielu/*.egg-info/
-xielu/dist/
+build/
+*.egg-info/
