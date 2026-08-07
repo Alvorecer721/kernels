@@ -82,8 +82,16 @@ def _patch_vllm_xielu():
             )
         return self._xielu_python(input)
 
+    def forward(self, *args, **kwargs):
+        return forward_native(self, *args, **kwargs)
+
     cls.forward_native = forward_native
     cls.forward_cuda = forward_native
+    # CustomOp.__init__ snapshots self._forward_method BEFORE this module is
+    # imported (the import happens inside XIELU.__init__), so the first
+    # instance would keep the stock method; overriding forward() makes the
+    # lookup happen at call time for every instance.
+    cls.forward = forward
     cls._xielu_shim_patched = True
 
 
