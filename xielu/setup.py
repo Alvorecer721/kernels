@@ -3,9 +3,9 @@ from torch.utils.cpp_extension import BuildExtension, CUDAExtension
 
 setup(
     name="xielu",
-    version="0.1.0",
-    packages=["xielu"],
-    package_dir={"xielu": "."},
+    version="0.2.0",
+    packages=["xielu", "xielu.ops"],
+    package_dir={"xielu": ".", "xielu.ops": "ops"},
     ext_modules=[
         CUDAExtension(
             name="_xielu",

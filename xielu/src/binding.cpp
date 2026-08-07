@@ -88,10 +88,36 @@ Tensor xielu_meta(
     return torch::empty_like(x);
 }
 
+// Inference entry point for vLLM, which constructs torch.classes.xielu.XIELU()
+// and calls .forward(x, alpha_p, alpha_n, beta, eps, with_vector_loads). The
+// class is stateless: it forwards to the same kernel training uses, so both
+// paths compute identical activations. `with_vector_loads` is a kernel hint
+// upstream's implementation accepts; this kernel always uses its own load path.
+struct XIELUInference : torch::CustomClassHolder {
+    Tensor forward(
+        const Tensor& x,
+        const Tensor& alpha_p,
+        const Tensor& alpha_n,
+        double beta,
+        double eps,
+        bool with_vector_loads
+    ) {
+        (void)with_vector_loads;
+        at::NoGradGuard no_grad;
+        // The kernel indexes the buffer linearly, so views handed over by the
+        // caller (vLLM reshapes activations before the call) must be packed.
+        return xielu_forward(x.contiguous(), alpha_p.contiguous(), alpha_n.contiguous(), beta, eps);
+    }
+};
+
 TORCH_LIBRARY(xielu, m) {
     m.def("forward(Tensor x, Tensor alpha_p, Tensor alpha_n, float beta, float eps) -> Tensor");
     m.def("backward(Tensor x, Tensor go, Tensor alpha_p, Tensor alpha_n, float beta, float eps) -> (Tensor, Tensor, Tensor)");
     m.def("xielu(Tensor x, Tensor alpha_p, Tensor alpha_n, float beta, float eps) -> Tensor");
+
+    m.class_<XIELUInference>("XIELU")
+        .def(torch::init<>())
+        .def("forward", &XIELUInference::forward);
 }
 
 TORCH_LIBRARY_IMPL(xielu, CUDA, m) {
